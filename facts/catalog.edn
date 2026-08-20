@@ -1,0 +1,481 @@
+;; Verified public-register citations for the legal entity archived by this repository.
+;;
+;; Every row is checked live by tools/verify_citations.cljs:
+;;   * GET :cite/url must answer HTTP 2xx
+;;   * :cite/expect-substring must appear in the response body
+;;
+;; A URL that cannot be fetched, or whose body no longer carries the claim, is a
+;; DRIFT and fails the gate. Nothing is recorded here that was not retrieved.
+;;
+;; THREE independent authorities are cited, not one:
+;;   * GLEIF, the global LEI system
+;;   * the British Crown, via Companies House
+;;   * the issuer itself, at the website blueprint.edn records for it
+;;
+;; THE ISRAELI HOME REGISTER IS NOT AMONG THEM -- BUT ITS NUMBER IS STILL
+;; CORROBORATED, AND THAT IS THE DIFFERENCE FROM THE SIBLINGS IN THIS FAMILY.
+;;
+;; GLEIF names RA000406 -- the Israeli Corporations Authority (Department of
+;; Justice) -- as BOTH the register of record and the validation authority for
+;; this entity (rows gleif-registered-at-ra and gleif-validated-at-ra), and gives
+;; the Israeli company number as 520018078. That register could not be cited
+;; directly: every route to it is recorded by name under :catalog/unreachable
+;; below, and none of them was worked around.
+;;
+;; What makes this catalog different from, say, the Reliance sibling -- where the
+;; home registration number rested on GLEIF's word ALONE -- is that here a SECOND
+;; state prints it. Companies House, asked about the UK subsidiary, publishes its
+;; person with significant control and records, in the UK register's own words:
+;;
+;;     Place registered      Israeli Companies Register
+;;     Registration number   52-001807
+;;     Governing law         Israeli Law
+;;     Incorporated in       Israel
+;;
+;; 52-001807 is 520018078 without its trailing check digit, hyphenated in the UK
+;; style. So the most load-bearing identifier in this catalog is attested by two
+;; authorities that did not consult each other: GLEIF and the British Crown.
+;; It is NOT a byte-for-byte match, and rows uk-psc-registration-number and
+;; gleif-registered-as deliberately carry both forms so the difference is visible
+;; rather than smoothed over.
+;;
+;; THE CHAIN THAT MAKES THAT POSSIBLE. GLEIF records exactly one direct child of
+;; this LEI: BANK LEUMI (U.K.) P.L.C., LEI 549300DBFNYYFVRXVB58, UK company
+;; 00640370 (rows gleif-child-*). Companies House prints that same name and that
+;; same number in its own record (uk-ch-name, uk-ch-number). Following that child
+;; to its PSC page is what produces the Israeli number above.
+;;
+;; THREE PLACES WHERE THE TWO AUTHORITIES DO NOT AGREE. These are recorded, not
+;; reconciled, because the disagreement is itself the finding:
+;;
+;;   THE NAME. The UK register calls the controller "Bank Leumi Le Israel B.M".
+;;   GLEIF's CURRENT legal name is "BANK LEUMI LE-ISRAEL LTD."; it carries
+;;   "BANK LEUMI LE-ISRAEL B.M." only as a PREVIOUS legal name, with a completed
+;;   CHANGE_LEGAL_NAME event effective 2022-07-19. The UK entry, notified in 2016,
+;;   still carries the pre-2022 name. Rows uk-psc-parent-name,
+;;   gleif-previous-name-bm and gleif-name-change-event hold all three facts.
+;;
+;;   THE ADDRESS. The UK register gives 34 Yehuda Halevi Street, Tel Aviv. GLEIF
+;;   gives 3 ABA HILLEL SILVER ST, LOD, after a CHANGE_LEGAL_ADDRESS event
+;;   effective 2024-04-19. The UK correspondence address is therefore NOT a second
+;;   witness to the current address -- it is a witness to the old one.
+;;
+;;   THE CHILD'S STATUS. GLEIF returns BANK LEUMI (U.K.) P.L.C. as an ACTIVE
+;;   entity in its direct-children collection. Companies House says the company
+;;   status is Liquidation. Row uk-ch-status-liquidation records what the UK
+;;   register says; no row asserts the child is trading.
+;;
+;; THE TASE LISTING IS CITED SECOND-HAND. Row uk-psc-legal-form is the UK register
+;; describing the controller as "A Banking Corporation With Shares Listed On The
+;; Tel Aviv Stock Exchange". That is the ONLY citation here for the exchange
+;; listing: TASE's own systems could not be cited (see :catalog/unreachable), so
+;; no row in this catalog is the exchange speaking for itself.
+;;
+;; THE ISSUER NAMES ITSELF, IN HEBREW ONLY. The bank's privacy policy opens with
+;; the Hebrew legal name (row leumi-legal-name-he). GLEIF holds the English form
+;; and an EMPTY transliteratedOtherNames list, so the join from the Hebrew name to
+;; the GLEIF record runs through transliteration, not through a shared string. The
+;; issuer does not publish its company number on the pages reached here.
+;;
+;; :cite/row-kind is the honest part of this catalog and should be read before the
+;; claims:
+;;
+;;   :identity   the substring names this entity, its identifiers, or a specific
+;;               related legal entity. Point the URL at a different company and
+;;               the row fails.
+;;   :attribute  the substring is TRUE OF THIS ENTITY BUT NOT ONLY OF IT (status
+;;               ACTIVE, country IL, governing law Israeli Law, SIC 64191). Such a
+;;               row can survive a swap to a similar company. It is recorded
+;;               because it is true and checkable, not because it identifies.
+;;
+;; THE TAXONOMY IS MEASURED, NOT ASSERTED. Every row above was classified by
+;; repointing the GLEIF URL at BANK HAPOALIM (LEI B6ARUI4946ST4S7WOU88) -- a real
+;; Israeli bank of comparable size, same country, same ACTIVE status -- and seeing
+;; which rows survived. THREE rows drafted as :identity survived that swap and
+;; were demoted to :attribute before this file landed:
+;;
+;;   gleif-managing-lou        both banks are managed by the same LOU
+;;   gleif-registered-at-ra    RA000406 is the register for every Israeli company
+;;   gleif-validated-at-ra     same
+;;
+;; No row that claims :identity survives being pointed at another company.
+;;
+;; Counting rows is not counting evidence. Nine of the :identity rows and nineteen
+;; of the :attribute rows come from a SINGLE GLEIF document -- 28 of the 56 rows
+;; here are one authority speaking once, not 28 witnesses.
+
+{:catalog/subject-lei "7JDSZWRGUQY2DSTWCR57"
+ :catalog/subject-legal-name "BANK LEUMI LE-ISRAEL LTD."
+ :catalog/retrieved "2026-08-20"
+ :catalog/authorities [:gleif :companies-house :issuer]
+ :catalog/entries
+ [
+  {:cite/id "gleif-lei"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"lei\":\"7JDSZWRGUQY2DSTWCR57\""
+   :cite/claim "GLEIF issues LEI 7JDSZWRGUQY2DSTWCR57."}
+  {:cite/id "gleif-legal-name"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"name\":\"BANK LEUMI LE-ISRAEL LTD.\""
+   :cite/claim "The legal name on that LEI is BANK LEUMI LE-ISRAEL LTD."}
+  {:cite/id "gleif-registered-as"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"registeredAs\":\"520018078\""
+   :cite/claim "GLEIF records Israeli company number 520018078 as this entity's registration number."}
+  {:cite/id "gleif-validated-as"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"validatedAs\":\"520018078\""
+   :cite/claim "The same Israeli company number is what the LOU validated the record against."}
+  {:cite/id "gleif-ocid"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"ocid\":\"il\\/520018078\""
+   :cite/claim "GLEIF's Open Corporates-style identifier for this entity is il/520018078 (the slash is JSON-escaped in the body)."}
+  {:cite/id "gleif-qcc"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"qcc\":\"QILQ0G9GXW\""
+   :cite/claim "GLEIF carries QCC code QILQ0G9GXW for this entity."}
+  {:cite/id "gleif-spglobal"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"spglobal\":[\"671599\"]"
+   :cite/claim "GLEIF maps this entity to S&P Global company id 671599."}
+  {:cite/id "gleif-previous-name-bm"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"name\":\"BANK LEUMI LE-ISRAEL B.M.\""
+   :cite/claim "GLEIF records BANK LEUMI LE-ISRAEL B.M. as a PREVIOUS legal name of this entity."}
+  {:cite/id "gleif-previous-name-inc"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"name\":\"LEUMI BANK INC\""
+   :cite/claim "GLEIF records LEUMI BANK INC as a second previous legal name."}
+  {:cite/id "gleif-managing-lou"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"managingLou\":\"213800WAVVOPS85N2205\""
+   :cite/claim "The LOU managing this record is LEI 213800WAVVOPS85N2205. MEASURED: this row survives a swap to another Israeli bank, which shares the same LOU, so it does not identify."}
+  {:cite/id "gleif-registered-at-ra"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"registeredAt\":{\"id\":\"RA000406\""
+   :cite/claim "GLEIF names RA000406 as the register of record for this entity. MEASURED: this row survives a swap to another Israeli company, since RA000406 is the register for all of them."}
+  {:cite/id "gleif-validated-at-ra"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"validatedAt\":{\"id\":\"RA000406\""
+   :cite/claim "GLEIF names the same RA000406 as the validation authority. MEASURED: survives a swap for the same reason as gleif-registered-at-ra."}
+  {:cite/id "gleif-status-active"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"status\":\"ACTIVE\""
+   :cite/claim "The entity status on the LEI record is ACTIVE."}
+  {:cite/id "gleif-registration-issued"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"status\":\"ISSUED\""
+   :cite/claim "The registration status on the LEI record is ISSUED."}
+  {:cite/id "gleif-jurisdiction"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"jurisdiction\":\"IL\""
+   :cite/claim "GLEIF records the entity's jurisdiction as IL."}
+  {:cite/id "gleif-city"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"city\":\"LOD\""
+   :cite/claim "GLEIF records the legal-address city as LOD."}
+  {:cite/id "gleif-region"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"region\":\"IL-TA\""
+   :cite/claim "GLEIF records the legal-address region as IL-TA (Tel Aviv district)."}
+  {:cite/id "gleif-postal"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"postalCode\":\"7129404\""
+   :cite/claim "GLEIF records postal code 7129404."}
+  {:cite/id "gleif-address-line"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"addressLines\":[\"3 ABA HILLEL SILVER ST\"]"
+   :cite/claim "GLEIF records the legal address street as 3 ABA HILLEL SILVER ST."}
+  {:cite/id "gleif-legal-form-other"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"other\":\"LIMITED COMPANY\""
+   :cite/claim "The legal form is recorded free-text as LIMITED COMPANY (ELF code 9999, i.e. unmapped)."}
+  {:cite/id "gleif-category"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"category\":\"GENERAL\""
+   :cite/claim "The entity category is GENERAL, i.e. not a branch and not a fund."}
+  {:cite/id "gleif-corroboration"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"corroborationLevel\":\"FULLY_CORROBORATED\""
+   :cite/claim "GLEIF rates the record FULLY_CORROBORATED against the home register."}
+  {:cite/id "gleif-conformity"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"conformityFlag\":\"CONFORMING\""
+   :cite/claim "GLEIF flags the record CONFORMING."}
+  {:cite/id "gleif-creation-date"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"creationDate\":\"1950-09-08T00:00:00Z\""
+   :cite/claim "GLEIF records the entity creation date as 1950-09-08."}
+  {:cite/id "gleif-initial-registration"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"initialRegistrationDate\":\"2012-06-06T15:55:00Z\""
+   :cite/claim "The LEI was first registered 2012-06-06."}
+  {:cite/id "gleif-next-renewal"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"nextRenewalDate\":\"2027-04-25T00:00:00Z\""
+   :cite/claim "The next renewal date on the record is 2027-04-25."}
+  {:cite/id "gleif-name-change-event"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"type\":\"CHANGE_LEGAL_NAME\""
+   :cite/claim "GLEIF records a completed CHANGE_LEGAL_NAME event (effective 2022-07-19) for this entity."}
+  {:cite/id "gleif-address-change-event"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57"
+   :cite/expect-substring "\"type\":\"CHANGE_LEGAL_ADDRESS\""
+   :cite/claim "GLEIF records a completed CHANGE_LEGAL_ADDRESS event (effective 2024-04-19)."}
+  {:cite/id "gleif-ra-name"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/registration-authorities/RA000406"
+   :cite/expect-substring "\"internationalOrganizationName\":\"Israeli Corporations Authority (Department of Justice)\""
+   :cite/claim "RA000406 resolves to the Israeli Corporations Authority (Department of Justice)."}
+  {:cite/id "gleif-ra-code"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/registration-authorities/RA000406"
+   :cite/expect-substring "\"code\":\"RA000406\""
+   :cite/claim "That registration-authority record carries code RA000406."}
+  {:cite/id "gleif-ra-country"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/registration-authorities/RA000406"
+   :cite/expect-substring "\"countryCode\":\"IL\""
+   :cite/claim "GLEIF places that registration authority in IL."}
+  {:cite/id "gleif-no-parent-reason"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57/direct-parent-reporting-exception"
+   :cite/expect-substring "\"reason\":\"NON_CONSOLIDATING\""
+   :cite/claim "GLEIF records NO direct accounting-consolidation parent; the reason given is NON_CONSOLIDATING."}
+  {:cite/id "gleif-no-parent-lei"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57/direct-parent-reporting-exception"
+   :cite/expect-substring "\"lei\":\"7JDSZWRGUQY2DSTWCR57\""
+   :cite/claim "That reporting exception is filed against this LEI."}
+  {:cite/id "gleif-child-lei"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57/direct-children"
+   :cite/expect-substring "\"lei\":\"549300DBFNYYFVRXVB58\""
+   :cite/claim "GLEIF records exactly one direct child, LEI 549300DBFNYYFVRXVB58."}
+  {:cite/id "gleif-child-name"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57/direct-children"
+   :cite/expect-substring "\"name\":\"BANK LEUMI (U.K.) P.L.C.\""
+   :cite/claim "That child's legal name is BANK LEUMI (U.K.) P.L.C."}
+  {:cite/id "gleif-child-registered-as"
+   :cite/authority :gleif
+   :cite/row-kind :identity
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57/direct-children"
+   :cite/expect-substring "\"registeredAs\":\"00640370\""
+   :cite/claim "GLEIF records UK company number 00640370 for that child."}
+  {:cite/id "gleif-child-count-one"
+   :cite/authority :gleif
+   :cite/row-kind :attribute
+   :cite/url "https://api.gleif.org/api/v1/lei-records/7JDSZWRGUQY2DSTWCR57/direct-children"
+   :cite/expect-substring "\"total\":1"
+   :cite/claim "The direct-children collection holds exactly one record."}
+  {:cite/id "uk-ch-name"
+   :cite/authority :companies-house
+   :cite/row-kind :identity
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370"
+   :cite/expect-substring ">BANK LEUMI (U.K.) P.L.C.</h1>"
+   :cite/claim "Companies House prints BANK LEUMI (U.K.) P.L.C. as the registered name of company 00640370."}
+  {:cite/id "uk-ch-number"
+   :cite/authority :companies-house
+   :cite/row-kind :identity
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370"
+   :cite/expect-substring "<strong>00640370</strong>"
+   :cite/claim "Companies House prints company number 00640370 for that name."}
+  {:cite/id "uk-ch-incorporated"
+   :cite/authority :companies-house
+   :cite/row-kind :identity
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370"
+   :cite/expect-substring "id=\"company-creation-date\">26 October 1959"
+   :cite/claim "Companies House records the incorporation date as 26 October 1959."}
+  {:cite/id "uk-ch-registered-office"
+   :cite/authority :companies-house
+   :cite/row-kind :identity
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370"
+   :cite/expect-substring "C/O MHA MACINTYRE HUDSON, 6th Floor 2 London Wall Place, London, EC2Y 5AU"
+   :cite/claim "The registered office on the UK register is care of MHA Macintyre Hudson, 2 London Wall Place."}
+  {:cite/id "uk-ch-status-liquidation"
+   :cite/authority :companies-house
+   :cite/row-kind :attribute
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370"
+   :cite/expect-substring "Liquidation"
+   :cite/claim "The UK register records the company status as Liquidation -- NOT as active. GLEIF still carries this child as ACTIVE."}
+  {:cite/id "uk-ch-type"
+   :cite/authority :companies-house
+   :cite/row-kind :attribute
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370"
+   :cite/expect-substring "Public limited Company"
+   :cite/claim "The UK register records the company type as Public limited Company."}
+  {:cite/id "uk-ch-sic"
+   :cite/authority :companies-house
+   :cite/row-kind :attribute
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370"
+   :cite/expect-substring "64191 - Banks"
+   :cite/claim "The UK register records SIC 64191 (Banks) as the nature of business."}
+  {:cite/id "uk-psc-parent-name"
+   :cite/authority :companies-house
+   :cite/row-kind :identity
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370/persons-with-significant-control"
+   :cite/expect-substring "<b>Bank Leumi Le Israel B.M</b>"
+   :cite/claim "The UK register names Bank Leumi Le Israel B.M as the person with significant control of 00640370. That is the PREVIOUS legal name GLEIF records for this entity, not the current one."}
+  {:cite/id "uk-psc-registration-number"
+   :cite/authority :companies-house
+   :cite/row-kind :identity
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370/persons-with-significant-control"
+   :cite/expect-substring "52-001807"
+   :cite/claim "The UK register prints Israeli registration number 52-001807 for that controller. GLEIF's registeredAs is 520018078: the same number, without the trailing check digit, hyphenated."}
+  {:cite/id "uk-psc-place-registered"
+   :cite/authority :companies-house
+   :cite/row-kind :attribute
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370/persons-with-significant-control"
+   :cite/expect-substring "Israeli Companies Register"
+   :cite/claim "The UK register names the Israeli Companies Register as the place that controller is registered."}
+  {:cite/id "uk-psc-governing-law"
+   :cite/authority :companies-house
+   :cite/row-kind :attribute
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370/persons-with-significant-control"
+   :cite/expect-substring "Israeli Law"
+   :cite/claim "The UK register records the controller's governing law as Israeli Law."}
+  {:cite/id "uk-psc-legal-form"
+   :cite/authority :companies-house
+   :cite/row-kind :attribute
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370/persons-with-significant-control"
+   :cite/expect-substring "A Banking Corporation With Shares Listed On The Tel Aviv Stock Exchange"
+   :cite/claim "The UK register describes the controller's legal form as a banking corporation with shares listed on the Tel Aviv Stock Exchange. This is the only citation in this catalog for the TASE listing; TASE itself could not be cited (see :catalog/unreachable)."}
+  {:cite/id "uk-psc-address-2016"
+   :cite/authority :companies-house
+   :cite/row-kind :identity
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370/persons-with-significant-control"
+   :cite/expect-substring "34 Yehuda Halevi Street, Tel Aviv, Israel"
+   :cite/claim "The UK register gives 34 Yehuda Halevi Street, Tel Aviv as the controller's correspondence address. GLEIF records a DIFFERENT current address (3 ABA HILLEL SILVER ST, LOD); this UK entry was notified in 2016 and predates GLEIF's 2024 address-change event."}
+  {:cite/id "uk-psc-notified-on"
+   :cite/authority :companies-house
+   :cite/row-kind :attribute
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370/persons-with-significant-control"
+   :cite/expect-substring "6 April 2016"
+   :cite/claim "The controller was notified to the UK register on 6 April 2016."}
+  {:cite/id "uk-psc-active"
+   :cite/authority :companies-house
+   :cite/row-kind :attribute
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370/persons-with-significant-control"
+   :cite/expect-substring "id=\"psc-status-tag-1\" class=\"status-tag font-xsmall\">Active"
+   :cite/claim "That person-with-significant-control entry is currently Active on the UK register."}
+  {:cite/id "uk-psc-control-shares"
+   :cite/authority :companies-house
+   :cite/row-kind :attribute
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370/persons-with-significant-control"
+   :cite/expect-substring "psc-noc-1-ownership-of-shares-75-to-100-percent"
+   :cite/claim "The nature of control recorded is ownership of 75% or more of the shares."}
+  {:cite/id "uk-psc-control-votes"
+   :cite/authority :companies-house
+   :cite/row-kind :attribute
+   :cite/url "https://find-and-update.company-information.service.gov.uk/company/00640370/persons-with-significant-control"
+   :cite/expect-substring "psc-noc-1-voting-rights-75-to-100-percent"
+   :cite/claim "The nature of control recorded also includes 75% or more of the voting rights."}
+  {:cite/id "leumi-legal-name-he"
+   :cite/authority :issuer
+   :cite/row-kind :identity
+   :cite/url "https://www.leumi.co.il/he/privacy_policy"
+   :cite/expect-substring "בנק לאומי לישראל בע\"מ"
+   :cite/claim "The bank's own privacy policy opens by naming itself in Hebrew as בנק לאומי לישראל בע\"מ -- the Hebrew form of the English legal name GLEIF records."}
+  {:cite/id "leumi-title"
+   :cite/authority :issuer
+   :cite/row-kind :attribute
+   :cite/url "https://www.leumi.co.il/he/privacy_policy"
+   :cite/expect-substring "<title>מדיניות הפרטיות - בנק לאומי</title>"
+   :cite/claim "That page is served by the bank under the title 'privacy policy - Bank Leumi'."}
+ ]
+
+ :catalog/unreachable
+ [
+  {:source/name "Israeli Corporations Authority open data (data.gov.il, dataset ica_companies)"
+   :source/url "https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054"
+   :source/measured "2026-08-20"
+   :source/why "The register IS published here -- 729854 company rows, resource f004176c-b85f-4542-8901-7b3176f9a054, refreshed 2026-08-20. It cannot be queried: datastore_search answers HTTP 500 for q=, for filters= (both the Hebrew column and the ASCII _id column) and for sort=, on three spaced attempts. Only unfiltered limit/offset answers 200, which cannot single out one company. datastore_search_sql answers 404. The bulk CSV is 253954108 bytes, too large to be a gate row. The resource host e.data.gov.il redirects to a Google OAuth sign-in, which was not followed."}
+  {:source/name "Israeli Corporations Authority online search (Tagidim)"
+   :source/url "https://ica.justice.gov.il/GenericCorporarionInfo/SearchCorporation?unit=8"
+   :source/measured "2026-08-20"
+   :source/why "Answers HTTP 200 but is a POST search form (form id frmSearchCorporation, method=post). The GET body contains zero occurrences of 520018078 and zero of the Hebrew name. Citing it would have produced a permanently green row that checks nothing about this entity."}
+  {:source/name "Bank of Israel, Banking Supervision"
+   :source/url "https://www.boi.org.il/en/banking-supervision/the-banking-system/"
+   :source/measured "2026-08-20"
+   :source/why "Answers HTTP 200 with 118354 bytes whose <title> is 'Radware Page' -- a bot-protection loader, not the supervisor's content. Zero occurrences of 'leumi', case-insensitive. This is a 2xx that carries no register data; the protection was not circumvented."}
+  {:source/name "Tel Aviv Stock Exchange -- Maya disclosure site"
+   :source/url "https://maya.tase.co.il/company/604"
+   :source/measured "2026-08-20"
+   :source/why "Answers HTTP 200 but serves the Maya home page shell; the body has zero occurrences of the Hebrew name. mayaapi.tase.co.il answers HTTP 403. The TASE listing is therefore cited only second-hand, through the UK register (row uk-psc-legal-form)."}
+  {:source/name "Israel Securities Authority -- Magna filings system"
+   :source/url "https://www.magna.isa.gov.il/"
+   :source/measured "2026-08-20"
+   :source/why "Answers HTTP 403 to this gate's User-Agent."}
+  {:source/name "US SEC EDGAR"
+   :source/url "https://www.sec.gov/cgi-bin/browse-edgar?company=leumi&CIK=&action=getcompany"
+   :source/measured "2026-08-20"
+   :source/why "Answers HTTP 403; the JSON company-ticker file answers HTTP 403 with title 'Request Rate Threshold Exceeded'."}
+  {:source/name "The privacy-policy URL this repository's README records as its archive source"
+   :source/url "https://www.leumi.co.il/privacy-policy"
+   :source/measured "2026-08-20"
+   :source/why "Answers HTTP 404, title 'the page does not exist - Bank Leumi'. The live document has MOVED to https://www.leumi.co.il/he/privacy_policy, which is what rows leumi-legal-name-he and leumi-title cite. The archived text in 80-data/public/tos.journal.edn and its recorded sha256 were NOT re-verified in this iteration and are not claimed here."}
+ ]}
